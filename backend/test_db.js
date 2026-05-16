@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const MONGO_URI = 'mongodb://127.0.0.1:27017/sri_sapthagiri';
+require('dotenv').config();
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/sri_sapthagiri';
 
 mongoose.connect(MONGO_URI, {
     useNewUrlParser: true,

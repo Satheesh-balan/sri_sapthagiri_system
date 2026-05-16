@@ -15,43 +15,38 @@ const RETENTION_MS      = RETENTION_SECONDS * 1000;
 
 app.use(cors());
 app.use(express.json());
-// MongoDB Connection — Auto-Retry on boot (network may not be ready immediately)
+// MongoDB Connection — Optimized for Serverless
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/sri_sapthagiri';
 
-async function connectWithRetry(attempt = 1) {
-    const MAX_ATTEMPTS = 20; // retry for up to ~2 minutes
-    console.log(`📡 Connecting to MongoDB... (attempt ${attempt}/${MAX_ATTEMPTS})`);
+let isConnected = false;
+
+async function connectToDatabase() {
+    if (isConnected) return;
+    
+    console.log('📡 Connecting to MongoDB...');
     try {
         await mongoose.connect(MONGO_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             dbName: 'sri_sapthagiri',
-            serverSelectionTimeoutMS: 8000, // wait 8s per attempt
+            serverSelectionTimeoutMS: 10000,
             socketTimeoutMS: 45000,
         });
+        isConnected = true;
         console.log('✅ MongoDB Connected Successfully');
         seedDatabase();
     } catch (err) {
-        console.error(`❌ MongoDB Connection Failed (attempt ${attempt}): ${err.message}`);
-        if (attempt < MAX_ATTEMPTS) {
-            console.log(`⏳ Retrying in 6 seconds...`);
-            setTimeout(() => connectWithRetry(attempt + 1), 6000);
-        } else {
-            console.error('🚨 Could not connect to MongoDB after maximum attempts. Server will still run but DB features unavailable.');
-        }
+        console.error(`❌ MongoDB Connection Failed: ${err.message}`);
+        // In serverless, we don't want to block the entire process if DB is down,
+        // but we need to log it.
     }
 }
 
-// Handle MongoDB disconnections (auto-reconnect)
-mongoose.connection.on('disconnected', () => {
-    console.warn('⚠️  MongoDB disconnected. Attempting to reconnect...');
-    setTimeout(() => connectWithRetry(), 5000);
+// Middleware to ensure DB is connected before handling requests
+app.use(async (req, res, next) => {
+    await connectToDatabase();
+    next();
 });
-mongoose.connection.on('reconnected', () => {
-    console.log('✅ MongoDB Reconnected');
-});
-
-connectWithRetry();
 
 
 // ──────────────────────────────────────────
