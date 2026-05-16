@@ -1,5 +1,8 @@
 node_modules/
 .env
-server.log
-__MACOSX/
 *.log
+.vscode/
+dist/
+build/
+.DS_Store
+Thumbs.db
