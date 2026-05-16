@@ -1,0 +1,12 @@
+{
+  "name": "sri-sapthagiri-inventory",
+  "version": "1.0.0",
+  "description": "Industrial Inventory & Transportation Management System",
+  "scripts": {
+    "dev": "node backend/server.js",
+    "start": "npx serve ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

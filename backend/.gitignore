@@ -2,4 +2,3 @@ node_modules/
 .env
 server.log
 __MACOSX/
-*.log
