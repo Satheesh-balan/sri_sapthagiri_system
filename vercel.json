@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "functions": {
+    "backend/server.js": {
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/backend/server.js"
+    },
+    {
+      "source": "/((?!api|css|js|assets|favicon.ico).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

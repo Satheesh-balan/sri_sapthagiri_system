@@ -656,3 +656,5 @@ app.listen(PORT, () => {
     console.log(`🚀 Sri Sapthagiri Server running on http://localhost:${PORT}`);
     console.log(`🗂️  Data Retention Policy: 18 months (auto-purge via MongoDB TTL)`);
 });
+
+module.exports = app;
